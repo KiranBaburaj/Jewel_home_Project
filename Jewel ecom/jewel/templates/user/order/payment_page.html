@@ -1,0 +1,77 @@
+<!-- In your payment_page.html -->
+{% extends 'user/base.html' %}
+
+{% block content %}
+  <div class="container mt-4">
+    <h2 class="mb-4">Payment Page</h2>
+    <a href="{% url 'order_history' %}" class="btn btn-info">Order History</a>
+    <p><strong>Order ID:</strong> {{ order.id }}</p>
+
+    <h3 class="mt-4">Select Payment Method:</h3>
+
+    <div id="payment-options">
+      <!-- Cash on Delivery option -->
+
+      {% if order.payment_method != 'WalletandRazorpay' and total_amount <= 1000 %}
+      <form method="post" action="{% url 'process_cod_payment' order.id %}">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-primary mt-2">Cash on Delivery (COD)</button>
+      </form><br>
+      {% endif %}
+
+      <!-- Razorpay option -->
+      <form method="post" id="razorpay-form" action="{% url 'process_razorpay_payment' order.id %}">
+        {% csrf_token %}
+
+        <script src="https://checkout.razorpay.com/v1/checkout.js"
+                data-key="rzp_test_HHlRhM2dDivhld"
+                data-amount="{{ total_amount }}"
+                data-currency="INR"
+                data-order_id="{{ order.razorpay_order_id }}"
+                data-buttontext="Pay with Razorpay"
+                data-name="Your Store"
+                data-description="Payment for Order #{{ order.id }}"
+                data-prefill.name="{{ order.user.get_full_name }}"
+                data-prefill.email="{{ order.user.email }}"
+                data-theme.color="#F37444">
+        </script>
+
+        <!-- Hide Razorpay button with JavaScript -->
+        <script>
+          document.addEventListener('DOMContentLoaded', function() {
+            var razorpayButton = document.querySelector('#razorpay-form button[type="submit"]');
+            razorpayButton.style.display = 'none';
+          });
+        </script>
+
+        <button type="submit" class="btn btn-primary mt-2 btn-lg">Pay with Razorpay</button>
+
+      </form>
+    </div>
+  </div>
+
+  <style>
+    .container {
+      max-width: 800px;
+      margin: auto;
+    }
+
+    .mb-4 {
+      margin-bottom: 1.5rem;
+    }
+
+    .mt-4 {
+      margin-top: 1.5rem;
+    }
+
+    .btn-primary {
+      background-color: #007bff;
+      border-color: #007bff;
+    }
+
+    .btn-primary:hover {
+      background-color: #0056b3;
+      border-color: #0056b3;
+    }
+  </style>
+{% endblock %}

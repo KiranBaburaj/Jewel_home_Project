@@ -1,0 +1,76 @@
+{% extends 'admin/base.html' %}
+
+{% block content %}
+
+
+{% for message in messages %}
+<div class="alert alert-{{ message.tags }}">
+  {{ message }}
+</div>
+{% endfor %}
+  <h2>Admin Order List</h2>
+  <table class="table table-hover">
+    <thead>
+      <tr>
+        <th scope="col">Order ID</th>
+        <th scope="col">User</th>
+        <th scope="col">Status</th>
+        <th scope="col">Total Value</th>
+        <th scope="col">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for order in orders %}
+        <tr>
+          <td>{{ order.id }}</td>
+          <td>{{ order.user.username }}</td>
+          <td>
+            <div>
+              {% if order.status == 'Processing' %}
+                <span class="badge bg-warning text-dark">{{ order.status }}</span>
+              {% elif order.status == 'Shipped' %}
+                <span class="badge bg-info">{{ order.status }}</span>
+              {% elif order.status == 'Delivered' %}
+                <span class="badge bg-success">{{ order.status }}</span>
+              {% elif order.status == 'Cancelled' %}
+                <span class="badge bg-danger">{{ order.status }}</span>
+                {% elif order.status == 'Returned' %}
+                <span class="badge bg-secondary">{{ order.status }}</span>
+              {% endif %}
+            </div>
+          </td>
+          <td>{{ order.total_value|floatformat:2 }}</td>
+          <td>
+            <a href="{% url 'admin_order_detail' order_id=order.id %}" class="btn btn-warning btn-sm">View</a>
+            
+            <a href="{% url 'admin_ship_order' order_id=order.id %}" class="btn btn-info btn-sm">Ship Order</a>
+
+            <a href="{% url 'admin_deliver_order' order_id=order.id %}" class="btn btn-success btn-sm">delivered Order</a>
+
+          
+            <a href="{% url 'admin_cancel_order' order_id=order.id %}" class="btn btn-danger btn-sm">Cancel Order</a>
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <!-- Pagination controls -->
+  <div class="pagination">
+    <span class="step-links">
+        {% if orders.has_previous %}
+            <a href="?page=1">&laquo; first</a>
+            <a href="?page={{ orders.previous_page_number }}">previous</a>
+        {% endif %}
+
+        <span class="current">
+            Page {{ orders.number }} of {{ orders.paginator.num_pages }}.
+        </span>
+
+        {% if orders.has_next %}
+            <a href="?page={{ orders.next_page_number }}">next</a>
+            <a href="?page={{ orders.paginator.num_pages }}">last &raquo;</a>
+        {% endif %}
+    </span>
+  </div>
+{% endblock %}

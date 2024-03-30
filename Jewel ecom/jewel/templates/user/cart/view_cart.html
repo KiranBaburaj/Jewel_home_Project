@@ -1,0 +1,94 @@
+{% extends 'user/base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+  <h2>Your Cart</h2>
+
+  {% if messages %}
+  <ul class="messages">
+    {% for message in messages %}
+      <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+
+  {% if cart_items %}
+  <form method="post" action="{% url 'update_cart' %}" id="cart-form">
+    {% csrf_token %}
+    <table class="table table-hover">
+      <thead>
+        <tr>
+          <th scope="col">Product</th>
+          <th scope="col">Image</th>
+          <th scope="col">Size</th>
+          <th scope="col">Quantity</th>
+          <th scope="col">Price</th>
+          <th scope="col">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in cart_items %}
+        <tr>
+          <td>
+            <a href="{% url 'product_detail' product_id=item.product.id %}">{{ item.product.name }}</a>
+          </td>
+          <td>
+            <img src="{{ item.product.images.first.images.url }}" alt="{{ item.product.name }}" width="50" height="50">
+          </td>
+          <td>{{ item.size.measurement }}</td>
+          <td>
+            <input type="number" name="quantity_{{ item.id }}" value="{{ item.quantity }}" min="1" max="{{ item.size.stock }}"
+            class="form-control quantity-input col-sm-6" data-item-id="{{ item.id }}" onchange="this.form.submit()">
+            {% if item.quantity_error %}
+            <span class="text-danger">{{ item.quantity_error }}</span>
+            {% endif %}
+          </td>
+          <td id="item-price-{{ item.id }}">{{ item.total_price|floatformat:2 }}</td>
+          <td>
+            <button type="button" class="btn btn-danger delete-item" data-item-id="{{ item.id }}">Delete Item</button>
+
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <p>Total Cart Value: <span id="total-cart-value">{{ total_cart_value }}</span></p>
+
+    <div class="text-right">
+      <a href="{% url 'checkout' %}" class="btn btn-success">Checkout</a>
+    </div>
+  </form>
+  {% else %}
+  <p>Your cart is empty.</p>
+  {% endif %}
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Add event listener for delete buttons
+  document.querySelectorAll('.delete-item').forEach(function(button) {
+    button.addEventListener('click', function() {
+      var itemId = this.getAttribute('data-item-id');
+      var form = document.createElement('form');
+      form.method = 'post';
+      form.action = '{% url "delete_cart_item" %}';
+
+      var csrfInput = document.createElement('input');
+      csrfInput.type = 'hidden';
+      csrfInput.name = 'csrfmiddlewaretoken';
+      csrfInput.value = '{{ csrf_token }}';
+      form.appendChild(csrfInput);
+
+      var itemInput = document.createElement('input');
+      itemInput.type = 'hidden';
+      itemInput.name = 'item_id';
+      itemInput.value = itemId;
+      form.appendChild(itemInput);
+
+      document.body.appendChild(form);
+      form.submit();
+    });
+  });
+});
+</script>
+{% endblock %}

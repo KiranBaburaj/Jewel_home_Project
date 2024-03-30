@@ -1,0 +1,22 @@
+{% extends 'admin/base.html' %}
+{% block content %}
+    <h1>Gold Rate List</h1>
+    <table class="table table-hover table-bordered">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Rate</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for rate in rates %}
+            <tr>
+                <td>{{ rate.date }}</td>
+                <td>{{ rate.rate }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{% url 'create_gold_rate' %}" class="btn btn-primary">Create Gold Rate</a>
+{% endblock %}

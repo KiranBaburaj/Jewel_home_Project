@@ -1,0 +1,21 @@
+<!-- size_list.html -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Size List</title>
+</head>
+
+<body>
+    <h1>Size List</h1>
+    <ul>
+        {% for size in sizes %}
+            <li><a href="{% url 'size_detail' size.id %}">{{ size.measurement }}</a></li>
+        {% endfor %}
+    </ul>
+    <a href="{% url 'size_create' %}">Create New Size</a>
+</body>
+
+</html>

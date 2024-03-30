@@ -1,0 +1,67 @@
+<!-- search_results.html -->
+{% extends 'user/base.html' %}
+
+{% block content %}
+  <div class="container mt-4">
+    <h2>Search Results</h2>
+
+    <form method="get" action="{% url 'search_products' %}">
+      <table class="table table-bordered table-striped">
+        <tbody>
+            {% for field in form %}
+            <tr>
+                <td>{{ field.label_tag }}</td>
+                <td>
+                    {% if field.field.widget.input_type != 'select' %}
+                    <input type="{{ field.field.widget.input_type }}" name="{{ field.name }}" value="{{ field.value }}" {% if field.field.required %}required{% endif %} min="{{ field.field.min_value }}" max="{{ field.field.max_value }}" class="form-control">
+                    {% else %}
+                    <select name="{{ field.name }}" class="form-control">
+                        {% for choice in field.field.choices %}
+                        <option value="{{ choice.0 }}" {% if field.value == choice.0 %}selected{% endif %}>{{ choice.1 }}</option>
+                        {% endfor %}
+                    </select>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    
+
+      <button type="submit" class="btn btn-primary">Search</button>
+    </form>
+    
+    {% if products %}
+      <div class="row mt-4">
+        {% for product in products %}
+          <div class="col-md-4 mb-4">
+            <div class="card">
+              <img src="{{ product.images.first.images.url }}" class="card-img-top" alt="{{ product.name }}" style="height: 300px; object-fit: cover;">
+              <div class="card-body">
+                <h5 class="card-title">{{ product.name }}</h5>
+         
+                <p class="card-text">Price: {{ product.price }}</p>
+                 {% if product.discount %}
+                <p class="card-text" style="margin-bottom: 0;">
+                  <span style="font-weight: bold; color: red;">{{ product.discount }}% Discount</span>
+                </p>
+              {% endif %}
+              {% if product.avg_rating %}
+                <p class="card-text" style="margin-bottom: 3px;">Average Rating: {{ product.avg_rating }}</p>
+              {% else %}
+                <p class="card-text" style="margin-bottom: 3px;">No ratings yet</p>
+              {% endif %}
+                <!-- Add more product details as needed -->
+
+                <!-- Add a link to the product detail page -->
+                <a href="{% url 'product_detail' product_id=product.id %}" class="btn btn-primary">View Details</a>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p>No products found.</p>
+    {% endif %}
+  </div>
+{% endblock %}

@@ -1,0 +1,148 @@
+{% extends 'user/base.html' %}
+
+{% block title %}Register{% endblock title %}
+{% load socialaccount %}
+
+{% block content %}
+<style>
+    .container {
+        margin-top: 50px;
+    }
+
+    .form-signin {
+        background-color: #ffffff;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+        color: #333333;
+    }
+
+    label {
+        font-weight: bold;
+        color: #555555;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    input[type="text"],    input[type="email"],
+    input[type="password"] {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        box-sizing: border-box;
+    }
+
+    input[type="tel"] {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        box-sizing: border-box;
+    }
+
+    .btn-primary {
+        background-color: #4CAF50;
+        border: none;
+        color: #ffffff;
+        padding: 10px;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+    .btn-primary:hover {
+        background-color: #45a049;
+    }
+
+    .btn-danger {
+        background-color: #d9534f;
+        border: none;
+        color: #ffffff;
+        padding: 10px;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+    .btn-danger:hover {
+        background-color: #c9302c;
+    }
+
+    a {
+        color: #337ab7;
+        text-decoration: none;
+        transition: color 0.3s;
+    }
+
+    a:hover {
+        color: #23527c;
+    }
+</style>
+{% if messages %}
+<ul class="messages mt-3">
+    {% for message in messages %}
+        <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+    {% endfor %}
+</ul>
+{% endif %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <h1 class="mb-4">Register</h1>
+
+            <form method="post" class="form-signin">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="{{ form.username.id_for_label }}">Username:</label>
+                    {{ form.username }}
+                </div>
+
+                <div class="form-group">
+                    <label for="{{ form.email.id_for_label }}">Email:</label>
+              
+                    <!-- Add the "required" attribute to make the field mandatory -->
+                    <input type="email" class="form-control" id="{{ form.email.id_for_label }}" name="{{ form.email.html_name }}" placeholder="Enter your email" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="{{ form.password1.id_for_label }}">Password:</label>
+                    {{ form.password1 }}
+                </div>
+
+                <div class="form-group">
+                    <label for="{{ form.password2.id_for_label }}">Confirm Password:</label>
+                    {{ form.password2 }}
+                </div>
+
+                <div class="form-group">
+                    <label for="phone_number">Phone Number :</label>
+                    <input type="tel" class="form-control" id="phone_number" name="phone_number" placeholder="Enter your phone number" required>
+                </div>
+
+                <!-- Include referral coupon field -->
+                <div class="form-group">
+                    <label for="referral_coupon_code">Referral Coupon Code:</label>
+                    <input type="text" class="form-control" id="referral_coupon_code" name="referral_coupon_code" placeholder="Enter your referral coupon code">
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-block">Register</button>
+            </form>
+
+            <p class="mt-3">or</p>
+
+            <a href="{% provider_login_url 'google' %}" class="btn btn-danger btn-block">Login with Google</a>
+
+       
+        </div>
+    </div>
+</div>
+
+{% endblock %}

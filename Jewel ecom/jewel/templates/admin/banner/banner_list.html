@@ -1,0 +1,17 @@
+<!-- templates/ecommerce/banner_list.html -->
+
+{% extends 'admin/base.html' %}
+
+{% block content %}
+    <h2>Banner List</h2>
+    <ul>
+        {% for banner in banners %}
+            <li>
+                <h3><a href="{% url 'banner_detail' pk=banner.pk %}">{{ banner.title }}</a></h3>
+                <img src="{{ banner.image.url }}" alt="{{ banner.title }}" style="max-width: 200px; max-height: 150px;">
+                <p>{{ banner.link }}</p>
+            </li>
+        {% endfor %}
+    </ul>
+    <a href="{% url 'banner_create' %}">Create New Banner</a>
+{% endblock %}

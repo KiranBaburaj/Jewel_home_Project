@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tax Invoice</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .invoice-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .invoice-details {
+            margin-bottom: 20px;
+            display: table;
+            width: 100%;
+        }
+        .invoice-left-details, .invoice-right-details {
+            display: table-cell;
+            padding: 10px;
+            vertical-align: top;
+        }
+        .invoice-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        .invoice-table th,
+        .invoice-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        .invoice-table th {
+            background-color: #f2f2f2;
+        }
+        .invoice-total {
+            font-weight: bold;
+            text-align: right;
+        }
+        .invoice-summary {
+            margin-bottom: 20px;
+        }
+        .authorized-signatory {
+            margin-top: 50px;
+            text-align: right;
+            font-style: italic;
+        }
+        .signature-line {
+            width: 50%;
+            border-top: 1px solid #000;
+            margin: 0 auto;
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="invoice-header">
+        <h1>Tax Invoice</h1>
+        <h2>JEWEL HOME </h2>
+        <p>Date: {{ order.created_at }}</p>
+        <p>GST Number: XXXXXXXXX</p>
+    </div>
+    <div class="invoice-details">
+        <div class="invoice-left-details">
+            <table>
+                <tr>
+                    <td><strong>Invoice Number:</strong></td>
+                    <td>GA{{ order.id }}</td>
+                </tr>
+                <tr>
+                    <td><strong>Order ID:</strong></td>
+                    <td>{{ order.id }}</td>
+                </tr>
+                <tr>
+                    <td><strong>User:</strong></td>
+                    <td>{{ order.user.username }}</td>
+                </tr>
+                <tr>
+                    <td><strong>Email:</strong></td>
+                    <td>{{ order.user.email }}</td>
+                </tr>
+                <tr>
+                    <td><strong>Shipping Address:</strong></td>
+                    <td>{{ order.address.street_address }}, {{ order.address.city }}, {{ order.address.state }}, {{ order.address.postal_code }}, {{ order.address.country }}</td>
+                </tr>
+                <tr>
+                    <td><strong>Status:</strong></td>
+                    <td>{{ order.status }}</td>
+                </tr>
+
+
+
+
+            </table>
+        </div>
+       
+    </div>
+    <table class="invoice-table">
+        <thead>
+            <tr>
+                <th>Product</th>
+                <th>Size</th>
+                <th>Quantity</th>
+
+                <th>Total Price</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in order.items.all %}
+                <tr>
+                    <td>{{ item.product.name }}</td>
+                    <td>{{ item.size.measurement }}</td>
+                    <td>{{ item.quantity }}</td>
+                 
+                    <td>{{ item.total_price }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="2" class="invoice-total">Total:</td>
+                <td colspan="2">{{ order.total_value }}</td>
+            </tr>
+        </tfoot>
+    </table>
+
+    <div class="invoice-right-details">
+        <table>
+
+                <td colspan="2"><h2>Payment Summary</h2></td>
+            </tr>
+            <tr>
+                <td><strong>Total (incl GST):</strong></td>
+                <td>{{ order.total_value }}</td>
+            </tr>
+            <tr>
+                <td><strong>GST:</strong></td>
+                <td>{{ gst | floatformat:2 }}</td>
+
+            </tr>
+            {% if order.delivery_charge > 0 %}
+            <tr>
+                <td><strong>Delivery charge:</strong></td>
+                <td>{{ order.delivery_charge }}</td>
+            </tr>  {% endif %}
+            
+            {% if order.coupon_code %}
+
+                <tr>
+                    <td><strong> coupon Discount:</strong></td>
+                    <td>{{ order.coupon_discount }}</td>
+                </tr>
+            {% endif %}
+            <tr>
+                <td><strong>Order Value after discount:</strong></td>
+                <td>{{ order.discounted_total }}</td>
+                
+            <!-- Add more payment summary details here -->
+        </table>
+    </div><br>
+    <div class="authorized-signatory">
+        <div class="signature-line"></div>
+        <p>Authorized Signatory:</p><br>
+        <p>JEWEL HOME</p>
+        <div class="signature-line"></div>
+    </div>
+    
+</body>
+</html>

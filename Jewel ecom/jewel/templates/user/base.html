@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Bootstrap JS and Popper.js -->
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.min.js"></script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Ecommerce Website Name</title>
+
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            font-family: 'Roboto', sans-serif; /* Added a bold font */
+        }
+
+        main {
+            flex: 1;
+        }
+
+        header {
+            background-color: #f8f9fa; /* Lighter background color */
+            padding: 10px 0;
+        }
+
+        nav {
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1); /* Added box-shadow for a subtle effect */
+        }
+
+        .navbar-nav .nav-link {
+            font-weight: bold; /* Bold font for navigation links */
+        }
+
+        footer {
+            background-color: #343a40; /* Darker background color */
+            color: white;
+            padding: 20px 0;
+            position: relative;
+            bottom: 0;
+            width: 100%;
+            font-size: 14px;
+        }
+
+        footer a {
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+          
+
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item active">
+                        <a class="nav-link" href="{% url 'home'%}">Jewel Home</a>
+                    </li>
+           
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'home'%}">About Us</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'home'%}">Contact</a>
+                    </li>
+                </ul>
+
+               <!-- Inside your navbar, replace the existing form with this: -->
+       
+               <form class="form-inline" method="get" action="{% url 'search_products' %}">
+                <div class="form-group">
+                    <input type="text" name="search_query" class="form-control" placeholder="Search">
+                </div>
+                <button type="submit" class="btn btn-primary">Search</button>
+            </form>
+            
+
+                <ul class="navbar-nav ml-auto">
+                    {% if user.is_authenticated %}
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
+                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                {{ user.username }}
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="userDropdown">
+                                <a class="dropdown-item" href="{% url 'user_profile'%}">Profile</a>
+                                <a class="dropdown-item" href="{% url 'wishlist'%}">Wishlist</a>
+                  
+                                <a class="dropdown-item" href="{% url 'view_cart'%}">Cart</a>
+                                <a class="dropdown-item" href="{% url 'logout'%}">Logout</a>
+                            </div>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'signin'%}">Login</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'signup'%}">Register</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container">
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <footer class="bg-dark text-white mt-5">
+        <div class="container py-3">
+            <div class="row">
+                <div class="col-md-6">
+                    <h4>Contact Us</h4>
+                    <p>Email: info@jewe.com</p>
+                    <p>Phone: +1 (123) 456-7890</p>
+                </div>
+                <div class="col-md-6">
+                    <h4>Follow Us</h4>
+                    <ul class="list-inline">
+                        <li class="list-inline-item"><a href="#" class="text-white">Facebook</a></li>
+                        <li class="list-inline-item"><a href="#" class="text-white">Twitter</a></li>
+                        <li class="list-inline-item"><a href="#" class="text-white">Instagram</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="text-center py-2 bg-secondary">
+            &copy; 2024 JEWELHOME Website. All rights reserved.
+        </div>
+    </footer>
+    
+</body>
+
+</html>

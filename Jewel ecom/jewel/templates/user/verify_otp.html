@@ -1,0 +1,112 @@
+{% extends 'user/base.html' %}
+
+{% block content %}
+{% load socialaccount %}
+
+<style>
+    .container {
+        margin-top: 50px;
+    }
+
+    .form-signin {
+        background-color: #ffffff;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    h2 {
+        color: #333333;
+    }
+
+    label {
+        font-weight: bold;
+        color: #555555;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    input[type="text"],
+    input[type="password"],
+    input[type="tel"] {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        box-sizing: border-box;
+    }
+
+    .btn-primary {
+        background-color: #4CAF50;
+        border: none;
+        color: #ffffff;
+        padding: 10px;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+    .btn-primary:hover {
+        background-color: #45a049;
+    }
+
+    .btn-danger {
+        background-color: #d9534f;
+        border: none;
+        color: #ffffff;
+        padding: 10px;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+    .btn-danger:hover {
+        background-color: #c9302c;
+    }
+
+    a {
+        color: #337ab7;
+        text-decoration: none;
+        transition: color 0.3s;
+    }
+
+    a:hover {
+        color: #23527c;
+    }
+</style>
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <h2 class="mb-4 text-center">Verify OTP</h2>
+
+            <form method="post" action="{% url 'verify_otp' %}" class="form-signin">
+                {% csrf_token %}
+
+                <div class="form-group">
+                    {{ form.otp.label_tag }}
+                    {{ form.otp }}
+                </div>
+
+                {% if form.errors %}
+                    <div class="alert alert-danger text-center" role="alert">
+                        Invalid OTP or OTP has expired. Please try again.
+                    </div>
+                {% endif %}
+
+                <button type="submit" class="btn btn-primary btn-block mt-3">Verify OTP</button>
+            </form>
+
+            <!-- Resend OTP Button -->
+            <form method="post" action="{% url 'resend_otp' %}" id="resend-otp-form">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-secondary btn-block mt-3">Resend OTP</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

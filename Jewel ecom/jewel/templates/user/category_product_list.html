@@ -1,0 +1,41 @@
+{% extends 'user/base.html' %}
+
+{% block content %}
+  <h2>{{ category.name }} Products</h2>
+
+  {% if products %}
+    <div class="row">
+      {% for product in products %}
+        <div class="col-md-3 mb-3">
+          <div class="card" style="height: 450px; display: flex; flex-direction: column; justify-content: space-between;">
+            <img src="{{ product.images.first.images.url }}" alt="{{ product.name }}" class="card-img-top">
+            <div class="card-body" style="flex-grow: 1;">
+              <h6 class="card-title" style="margin-bottom: 5px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">
+                {{ product.name }}
+              </h6>
+              <p class="card-text" style="margin-bottom: 3px;">Weight: {{ product.weight }} Grams</p>
+              <p class="card-text" style="margin-bottom: 3px;">
+                <span style="font-weight: bold; color: green;">Price: {{ product.tot_price }}</span>
+              </p>
+              {% if product.discount %}
+                <p class="card-text" style="margin-bottom: 0;">
+                  <span style="font-weight: bold; color: red;">{{ product.discount }}% Discount</span>
+                </p>
+              {% endif %}
+              {% if product.average_rating %}
+                <p class="card-text" style="margin-bottom: 3px;">Average Rating: {{ product.average_rating }}</p>
+              {% else %}
+                <p class="card-text" style="margin-bottom: 3px;">No ratings yet</p>
+              {% endif %}
+            </div>
+            <div class="card-footer text-center" style="padding: 5px;">
+              <a href="{% url 'product_detail' product.pk %}" class="btn btn-primary">View Details</a>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p>No products available in this category.</p>
+  {% endif %}
+{% endblock %}

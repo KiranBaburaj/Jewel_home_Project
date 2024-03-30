@@ -1,0 +1,146 @@
+{% extends 'user/base.html' %}
+
+{% block content %}
+  <div class="container mt-4">
+    <h2 class="text-center mb-4">Checkout</h2>
+
+    <div class="row">
+      <div class="col-md-8">
+        <h3>Order Summary</h3>
+        <!-- Display order summary -->
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th scope="col">Product</th>
+              <th scope="col">Image</th>
+              <th scope="col">Size</th>
+              <th scope="col">Quantity</th>
+              <th scope="col">Price</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for item in user_cart.items.all %}
+              <tr>
+                <td>{{ item.product.name }}</td>
+                <td><img src="{{ item.product.images.first.images.url }}" alt="{{ item.product.name }}" width="50" height="50"></td>
+                <td>{{ item.size.measurement }}</td>
+                <td>{{ item.quantity }}</td>
+                <td>{{ item.total_price|floatformat:2 }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+
+
+
+        {% if applicable_coupons %}
+          <h3>Apply Coupon</h3>
+          <div class="coupon-list">
+            <p>Select a coupon to apply:</p>
+            <ul>
+              {% for coupon in applicable_coupons %}
+                <li>
+                  <label>
+                    <input type="radio" name="coupon_code" value="{{ coupon.code }}" class="coupon-radio" {% if forloop.first %}checked{% endif %}>
+                    {{ coupon.code }} ({{ coupon.get_discount_type_display }}: {{ coupon.discount_amount|floatformat:2 }}{% if coupon.discount_type == 'percentage' %}%{% endif %})
+                  </label>
+                </li>
+              {% endfor %}
+            </ul>
+
+          </div>
+        {% else %}
+          <p>No coupons available.</p>
+        {% endif %}
+
+    
+
+
+        <p><strong>Total cart value:</strong> {{ user_cart.total_cart_value|floatformat:2 }}</p>
+        <p class="total-cart-value">Total Cart Value: {{ user_cart.total_cart_value|floatformat:2 }}</p>
+        {% if user_cart.total_cart_value < 5000 %}     <p><strong>Delivery Charge:</strong>  100 </p>        {% endif %}
+        <p><strong>Wallet Balance:</strong> {{ request.user.wallet.balance }}</p>
+        <p id="balance-amount"></p> <!-- Dynamic balance amount will be displayed here -->
+      </div>
+
+      <div class="col-md-4">
+  
+
+        <h3>Select Address</h3>
+        <form method="post" action="{% url 'checkout' %}">
+          {% csrf_token %}
+          <input type="hidden" name="coupon_code" id="coupon_code" value="">
+
+          <!-- Display only the selected address as a radio button -->
+          {% for address in user_addresses %}
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              <label class="address-label">
+                <input type="radio" name="address" value="{{ address.id }}" {% if forloop.first %}checked{% endif %}>
+                {{ address }}
+                <div class="address-actions">
+                  <a href="{% url 'edit_address' address.id %}" class="btn btn-sm btn-warning">Edit</a>
+                </div>
+              </label>
+            </li>
+          {% endfor %}
+
+          <h3>Add/Edit Addresses</h3>
+          <a href="{% url 'add_address' %}" class="btn btn-primary mt-1">Add Address</a>
+          <br>
+          <br>
+          <button type="submit" class="btn btn-success mt-5">Place Order</button>
+        </form>
+
+        {% if order_id %}
+          <p>Your order has been successfully placed. <a href="{% url 'order_successful' order_id %}">View Order Details</a></p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Add this script to handle coupon change -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script>
+    $(document).ready(function() {
+      // Add event listener for coupon radio buttons
+      $('.coupon-radio').on('change', function() {
+        var couponCode = $(this).val();
+        updateDiscountedTotal(couponCode);
+      });
+
+      // Initial calculation when the page loads
+      var initialCouponCode = $('input[name="coupon_code"]:checked').val();
+      updateDiscountedTotal(initialCouponCode);
+    });
+
+    function updateDiscountedTotal(couponCode) {
+      var totalCartValue = parseFloat("{{ user_cart.total_cart_value }}");
+      if (!isNaN(totalCartValue)) {
+        // Send AJAX request to calculate discounted total
+        $.ajax({
+          type: 'GET',
+          url: '{% url "calculate_discounted_total" %}',
+          data: {'coupon_code': couponCode, 'total_cart_value': totalCartValue},
+          dataType: 'json',
+          success: function(data) {
+            console.log('AJAX response:', data);  // Add this line
+            var discountedTotal = parseFloat(data.discounted_total);
+            if (!isNaN(discountedTotal)) {
+              $('.total-cart-value').text('Discounted Total: ' + discountedTotal.toFixed(2));
+              $('#coupon_code').val(couponCode);
+            } else {
+              $('.total-cart-value').text('Total Cart Value: ' + totalCartValue.toFixed(2));
+              $('#coupon_code').val('');
+            }
+          },
+          error: function(xhr, status, error) {
+            console.error('Error calculating discounted total:', status, error);
+          }
+        });
+      } else {
+        $('.total-cart-value').text('Total Cart Value: ' + totalCartValue.toFixed(2));
+        $('#coupon_code').val('');
+      }
+    }
+  </script>
+{% endblock %}

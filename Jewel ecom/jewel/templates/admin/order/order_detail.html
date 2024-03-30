@@ -1,0 +1,142 @@
+{% extends 'admin/base.html' %}
+
+{% block content %}
+<div class="container">
+  <h2 class="my-4">Admin Order Detail</h2>
+
+  <div class="row">
+    <div class="row">
+      <div class="col-md-6">
+        <div class="card mb-4">
+          <div class="card-body">
+            <h5 class="card-title">Order Details</h5>
+            <table class="table">
+              <tbody>
+                <tr>
+                  <th scope="row">Order ID:</th>
+                  <td>{{ order.id }}</td>
+                </tr>
+                <tr>
+                  <th scope="row">User:</th>
+                  <td>{{ order.user.username }}</td>
+                </tr>
+                <tr>
+                  <th scope="row">Address:</th>
+                  <td>{{ order.original_street_address }}, {{ order.original_city }}, {{ order.original_state }}, {{ order.original_postal_code }}, {{ order.original_country }}</td>
+                </tr>
+                <tr>
+                  <th scope="row">Status:</th>
+                  <td>
+                    {% if order.status == 'Processing' %}
+                      <span class="badge bg-warning text-dark">{{ order.status }}</span>
+                    {% elif order.status == 'Shipped' %}
+                      <span class="badge bg-info">{{ order.status }}</span>
+                    {% elif order.status == 'Delivered' %}
+                      <span class="badge bg-success">{{ order.status }}</span>
+                    {% elif order.status == 'Cancelled' %}
+                      <span class="badge bg-danger">{{ order.status }}</span>
+                    {% elif order.status == 'Returned' %}
+                      <span class="badge bg-secondary">{{ order.status }}</span>
+                    {% endif %}
+                  </td>
+                </tr>
+                <tr>
+                  <th scope="row">Total Order Value after discount:</th>
+                  <td>{{ order.discounted_total|floatformat:2 }}</td>
+                </tr>
+                {% if order.delivery_charge > 0 %}
+                <tr>
+                    <td><strong>Delivery charge:</strong></td>
+                    <td>{{ order.delivery_charge }}</td>
+                </tr>  {% endif %}
+
+
+
+                <tr>
+                  <th scope="row">Payment Status:</th>
+                  <td>{{ order.get_payment_status_display }}</td>
+                </tr>
+                <tr>
+                  <th scope="row">Payment Method:</th>
+                  <td>{{ order.get_payment_method_display }}</td>
+                </tr>
+                {% if order.coupon_code %}
+                  <tr>
+                    <th scope="row">Coupon Applied:</th>
+                    <td>{{ order.coupon_code }}</td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Discount:</th>
+                    <td>{{ order.coupon_discount }}</td>
+                  </tr>
+                {% else %}
+                  <tr>
+                    <th scope="row">Coupon Applied:</th>
+                    <td>No Coupon Applied</td>
+                  </tr>
+                {% endif %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+    
+  
+
+    <div class="col-md-6">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">Ordered Items</h5>
+          <div class="table-responsive">
+            <table class="table table-hover">
+              <thead>
+                <tr>
+                  <th scope="col">Product</th>
+                  <th scope="col">Size</th>
+                  <th scope="col">Quantity</th>
+                  <th scope="col">Total Price</th>
+                  <th scope="col">Image</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for item in order.items.all %}
+                  <tr>
+                    <td>{{ item.product.name }}</td>
+                    <td>{{ item.size.measurement }}</td>
+                    <td>{{ item.quantity }}</td>
+                    <td>{{ item.total_price|floatformat:2 }}</td>
+                    <td><img src="{{ item.product.images.first.images.url }}" alt="{{ item.product.name }}" style="max-width: 100px;"></td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div></div>
+  
+            
+  <a href="{% url 'admin_ship_order' order_id=order.id %}" class="btn btn-info btn-sm">Ship Order</a>
+
+  <a href="{% url 'admin_deliver_order' order_id=order.id %}" class="btn btn-success btn-sm">delivered Order</a>
+
+
+ 
+    <a href="{% url 'admin_cancel_order' order_id=order.id %}" class="btn btn-danger btn-sm">Cancel Order</a>
+ 
+  
+  <a href="{% url 'admin_order_list' %}" class="btn btn-secondary">Back to Order List</a>
+  
+
+
+  
+  
+
+{% for message in messages %}
+  <div class="alert alert-{{ message.tags }} mt-4">
+    {{ message }}
+  </div>
+{% endfor %}
+{% endblock %}

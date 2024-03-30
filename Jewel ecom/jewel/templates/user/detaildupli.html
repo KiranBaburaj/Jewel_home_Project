@@ -1,0 +1,275 @@
+{% extends 'user/base.html' %}
+
+{% block content %}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'category_product_list' product.Category.pk %}">{{ product.Category.name }}</a></li>
+        <li class="breadcrumb-item active" aria-current="page">{{ product.name }}</li>
+    </ol>
+</nav>
+
+<h2>{{ product.name }}</h2>
+
+<div class="row">
+    <div class="col-md-6 zoom-container">
+        {% if product.images.all %}
+            <div class="zoom-img-container" id="zoom-container">
+                <img src="{{ product.images.first.images.url }}" alt="{{ product.name }}" class="img-fluid" id="zoom-img">
+                <div class="lens" id="lens"></div>
+            </div>
+            <div class="thumbnail-container">
+                {% for image in product.images.all %}
+                    <img src="{{ image.images.url }}" alt="{{ product.name }}" class="thumbnail" onclick="changeImage('{{ image.images.url }}')">
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
+    <div class="col-md-6">
+   
+        <p><span style="color: #007bff; font-weight: bold;">{{ product.description }}</span></p>
+        <p><span style="font-weight: bold;">Base Price:</span> ₹{{ product.price }}</p>
+        
+        
+        {% if product.discount %}
+            <p><span style="color: red; font-weight: bold;">Discount in making_charge:</span> {{ product.discount }}%</p>
+            <p><span style="font-weight: bold;">Discounted Base Price:</span> ₹{{ product.discprice }}</p>
+        {% endif %}
+
+        <p><span style="font-weight: bold;">Weight:</span> {{ product.weight }} Grams</p>
+        <p><span style="font-weight: bold;">Making Charge:</span> {{ product.making_charge }}%</p>
+        <!-- Other product details -->
+<p><span style="font-weight: bold;">Rating:</span> 
+    {% if average_rating %}
+        {{ average_rating }}/5
+    {% else %}
+        No ratings yet
+    {% endif %}
+</p>
+
+        <p><span style="font-weight: bold;">Daily Rate:</span> ₹{{ product.daily_rate.rate }}</p>
+        <p><span style="font-weight: bold;">Total Price (incl GST):</span> ₹{{ product.tot_price }}</p>
+
+        <p><span style="font-weight: bold;">Available Sizes:</span>
+           <form method="post" action="{% url 'add_to_cart' %}" class="mt-3" id="add-to-cart-form">
+                {% csrf_token %}
+                <input type="hidden" name="product_id" value="{{ product.id }}">
+            
+                <div class="form-group row">
+                    <label for="size" class="col-sm-2 col-form-label">Size:</label>
+                    <div class="col-sm-4">
+                        <!-- Add a dropdown for selecting the size -->
+                        <select name="size" id="size-select" class="form-control">
+                            {% for size in product.product_sizes.all %}
+                                <option value="{{ size.id }}" data-stock="{{ size.stock }}">{{ size.measurement }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-sm-6">
+                        <!-- Display stock information -->
+                        <p id="stock-info">Stock: {{ product.product_sizes.first.stock }}</p>
+                    </div>
+
+                </div>
+            
+                <div class="form-group row">
+                    <label for="quantity" class="col-sm-2 col-form-label">Quantity:</label>
+                    <div class="col-sm-4">
+                        <input type="number" name="quantity" class="form-control" value="1" min="1">
+                    </div>
+                </div>
+            
+                <div class="form-group row">
+                    <div class="col-sm-6">
+                        <button type="submit" class="btn btn-primary">Add to Cart</button>
+                    </div>
+                </div>
+            </form>
+            {% if form.errors %}
+            <div class="alert alert-danger mt-2" role="alert">
+                <strong>Oops! Something went wrong:</strong>
+                <ul>
+                    {% for field, errors in form.errors.items %}
+                        {% for error in errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+        
+        </p>
+
+        <div class="mt-3">
+            <a href="{% url 'view_cart' %}" class="btn btn-info">View Cart</a>
+            <!-- Add to Wishlist button -->
+            <a href="{% url 'add_to_wishlist' product.id %}" class="btn btn-danger">Add to Wishlist</a>
+        </div>
+
+
+<!-- Rest of your template -->
+
+        <!-- Discounts and Coupon Section -->
+        {% if product.discount %}
+            <div class="mt-4">
+                <h4><span style="color: green;">Discounts:</span></h4>
+                <p><span style="color: red;">{{ product.discount }}% discount applied!</span></p>
+                <!-- Add more discount details if needed -->
+            </div>
+        {% endif %}
+
+        <!-- Ratings and Reviews Section -->
+        <!-- Rest of your template -->
+
+<!-- Ratings and Reviews Section -->
+<div class="mt-4">
+    <h4><span style="color: #007bff;">Ratings and Reviews:</span></h4>
+    {% if ratings_reviews %}
+        <ul>
+            {% for rating_review in ratings_reviews %}
+                <li>
+                    <p><span style="font-weight: bold;">User:</span> {{ rating_review.user }}</p>
+                    <p><span style="font-weight: bold;">Rating:</span> {{ rating_review.rating }}/5</p>
+                    {% if rating_review.review %}
+                        <p><span style="font-weight: bold;">Review:</span> {{ rating_review.review }}</p>
+                    {% endif %}
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No ratings and reviews available for this product yet.</p>
+    {% endif %}
+</div>
+
+    </div>
+</div>
+<div class="mt-4">
+    <h4><span style="color: #007bff;">Recommended Products:</span></h4>
+    <div class="row">
+        {% for related_product in random_related_products %}
+            <div class="col-md-4">
+                <div class="card">
+                    <img src="{{ related_product.images.first.images.url }}" class="card-img-top" alt="{{ related_product.name }}">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ related_product.name }}</h5>
+                        <p class="card-text"><span style="font-weight: bold;">Price:</span> ₹{{ related_product.price }}</p>
+                        {% if related_product.discount %}
+                        <p class="card-text" style="margin-bottom: 0;">
+                          <span style="font-weight: bold; color: red;">{{ related_product.discount }}% Discount</span>
+                        </p>
+                      {% endif %}
+                        <a href="{% url 'product_detail' related_product.id %}" class="btn btn-primary">View Details</a>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Add more details as needed -->
+
+<!-- Add stock, error handles, highlights, specs, etc. -->
+<style>
+    .zoom-container {
+        overflow: hidden;
+        position: relative;
+    }
+
+    .zoom-img-container {
+        position: relative;
+        overflow: hidden;
+    }
+
+    .zoom-img-container img {
+        transition: transform 0.3s;
+    }
+
+    .lens {
+        width: 100px;
+        height: 100px;
+        position: absolute;
+        border: 1px solid #d4d4d4;
+        display: none;
+        cursor: none;
+    }
+
+    .thumbnail-container {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 10px;
+    }
+
+    .thumbnail {
+        width: 100px;
+        height: 100px;
+        object-fit: cover;
+        cursor: pointer;
+    }
+
+    .thumbnail:hover {
+        border: 2px solid #007bff; /* Add your desired border color */
+    }
+
+    /* Add more styles as needed */
+</style>
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script>
+    
+    $(document).ready(function () {
+        // Function to fetch and display messages
+        function fetchMessages() {
+            $.ajax({
+                type: 'GET',
+                url: '/get_messages/',
+                dataType: 'json',
+                success: function (data) {
+                    // Display messages (you can customize this part based on your UI)
+                    for (var i = 0; i < data.messages.length; i++) {
+                        var message = data.messages[i];
+                        alert(message.message);
+                    }
+                },
+                error: function () {
+                    alert("An error occurred while fetching messages.");
+                }
+            });
+        }
+
+        $('form#add-to-cart-form').submit(function (event) {
+            event.preventDefault();
+            var form = $(this);
+    
+            $.ajax({
+                type: form.attr('method'),
+                url: form.attr('action'),
+                data: form.serialize(),
+                dataType: 'json',
+                success: function (data) {
+                    // Check if the request was successful
+                    if (data.success) {
+                        // Fetch and display messages after adding to the cart
+                        fetchMessages();
+                        // Other UI updates...
+                    } else {
+                        alert("Error: " + data.message);  // You can replace this with a more user-friendly notification
+                    }
+                },
+                error: function () {
+                    alert("An unexpected error occurred.");  // You can replace this with a more user-friendly notification
+                }
+            });
+        });
+
+        // Update stock information when size selection changes
+        $('#size-select').change(function () {
+            var selectedOption = $(this).find(':selected');
+            var stock = selectedOption.data('stock');
+            $('#stock-info').text('Stock: ' + stock);
+        });
+
+        // Rest of your JavaScript code...
+    });
+</script>
+
+
+{% endblock %}

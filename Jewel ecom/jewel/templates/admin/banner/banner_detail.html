@@ -1,0 +1,13 @@
+<!-- templates/ecommerce/banner_detail.html -->
+
+{% extends 'admin/base.html' %}
+
+{% block content %}
+    <h2>Banner Detail</h2>
+    <h3>{{ banner.title }}</h3>
+    <img src="{{ banner.image.url }}" alt="{{ banner.title }}" style="max-width: 200px; max-height: 150px;">
+    <p>{{ banner.link }}</p>
+    <a href="{% url 'banner_list' %}">Back to Banner List</a>
+    <a href="{% url 'banner_edit' pk=banner.pk %}">Edit Banner</a>
+    <a href="{% url 'banner_delete' pk=banner.pk %}">Delete Banner</a>
+{% endblock %}

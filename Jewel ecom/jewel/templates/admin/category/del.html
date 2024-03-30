@@ -1,0 +1,6 @@
+<a href="{% url 'soft_delete_category' category.pk %}">Soft Delete</a>
+
+<form method="post">
+  {% csrf_token %}
+  <button type="submit">Soft Delete</button>
+</form>

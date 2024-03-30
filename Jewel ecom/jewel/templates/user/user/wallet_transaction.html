@@ -1,0 +1,51 @@
+{% extends 'user/base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4">Wallet Transaction History</h2>
+    <p><strong>Opening Balance:</strong> {{ opening_balance }}</p>
+    <table class="table table-bordered table-striped">
+        <thead class="thead-dark">
+            <tr>
+                <th scope="col">Transaction Type</th>
+                <th scope="col">Amount</th>
+                <th scope="col">Timestamp</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for transaction in transactions %}
+            <tr>
+                <td>{{ transaction.transaction_type }}</td>
+                <td>{{ transaction.amount }}</td>
+                <td>{{ transaction.timestamp }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="3">No transactions found</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    
+    <!-- Pagination -->
+    <div class="pagination">
+        <span class="step-links">
+            {% if transactions.has_previous %}
+                <a href="?page=1">&laquo; first</a>
+                <a href="?page={{ transactions.previous_page_number }}">previous</a>
+            {% endif %}
+
+            <span class="current">
+                Page {{ transactions.number }} of {{ transactions.paginator.num_pages }}.
+            </span>
+
+            {% if transactions.has_next %}
+                <a href="?page={{ transactions.next_page_number }}">next</a>
+                <a href="?page={{ transactions.paginator.num_pages }}">last &raquo;</a>
+            {% endif %}
+        </span>
+    </div>
+
+    <p><strong>Current Balance:</strong> {{ current_balance }}</p>
+</div>
+{% endblock %}

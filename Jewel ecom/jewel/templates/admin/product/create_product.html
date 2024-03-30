@@ -1,0 +1,59 @@
+{% extends 'admin/base_site.html' %}
+
+{% block content %}
+  <div class="container mt-5">
+    <h2>Create Product</h2>
+    <form method="post" enctype="multipart/form-data" class="mt-3">
+      {% csrf_token %}
+    
+      <table class="table">
+        <tr>
+          <th>Name:</th>
+          <td>{{ product_form.name }}</td>
+        </tr>
+        <tr>
+          <th>Description:</th>
+          <td>{{ product_form.description }}</td>
+        </tr>
+      
+        <tr>
+          <th>Discount:</th>
+          <td>{{ product_form.discount }}</td>
+        </tr>
+        <tr>
+          <th>Weight:</th>
+          <td>{{ product_form.weight }}</td>
+        </tr>
+     
+        <tr>
+          <th>Making Charge:</th>
+          <td>{{ product_form.making_charge }}</td>
+        </tr>
+        <tr>
+          <th>Category:</th>
+          <td>{{ product_form.Category }}</td>
+        </tr>
+
+        <!-- Add other fields as needed -->
+
+        {{ image_formset.management_form }}
+        {% for form in image_formset %}
+          <tr>
+            <td colspan="2">{{ form.as_table }}</td>
+          </tr>
+        {% endfor %}
+
+        {{ size_formset.management_form }}
+        {% for form in size_formset %}
+          <tr>
+            <td colspan="2">{{ form.as_table }}</td>
+          </tr>
+        {% endfor %}
+
+      </table>
+
+      <br>
+      <button type="submit" class="btn btn-primary">Create Product</button>
+    </form>
+  </div>
+{% endblock %}

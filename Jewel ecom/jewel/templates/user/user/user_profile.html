@@ -1,0 +1,65 @@
+{% extends 'user/base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+  <div class="row align-items-center">
+    <h2 class="mb-4 mr-3">User Profile</h2> <!-- Add mr-3 class for right margin -->
+    <a href="{% url 'edit_profile' %}" class="btn btn-secondary">Edit Profile</a>
+</div>
+
+  <table class="table table-bordered">
+    <tbody>
+      <tr>
+        <th scope="row">Username:</th>
+        <td>{{ user.username }}</td>
+      </tr>
+      <tr>
+        <th scope="row">Email:</th>
+        <td>{{ user.email }}</td>
+      </tr>
+      <tr>
+        <th scope="row">Phone Number:</th>
+        <td>{{ user.phone_number }}</td>
+      </tr>
+      <tr>
+        <th scope="row">Wallet Balance:</th>
+        <td>{{ wallet_balance }}</td>
+      </tr>
+      {% if referral_coupon_code %}
+      <tr>
+        <th scope="row">Referral Coupon Code:</th>
+        <td>{{ referral_coupon_code }}</td>
+      </tr>
+      {% endif %}
+    </tbody>
+  </table>
+  <p><strong> Refer your friend using Coupon Code and grab 100 Rupees wallet money</p></strong>
+
+  <a href="{% url 'order_history' %}" class="btn btn-info">Order History</a>
+  <a href="{% url 'wallet_transaction_history' %}" class="btn btn-info">Wallet</a>
+</div>
+
+
+  <h2 class="mt-4 mb-3">Your Addresses</h2>
+  <ul class="list-group address-list">
+    {% for address in addresses %}
+    <li class="list-group-item d-flex justify-content-between align-items-center">
+      <div>
+        {{ address }}
+      </div>
+      <div class="address-actions">
+        <a href="{% url 'edit_address' address.id %}" class="btn btn-sm btn-warning">Edit</a>
+        <a href="{% url 'delete_address' address.id %}" class="btn btn-sm btn-danger">Delete</a>
+      </div>
+    </li>
+    {% endfor %}
+  </ul>
+</div>
+
+<a href="{% url 'add_address' %}" class="btn btn-primary mt-3">Add Address</a>
+
+<div class="profile-actions mt-3">
+  <!-- Button to navigate to the checkout page -->
+  <a href="{% url 'checkout' %}" class="btn btn-primary mt-3">Checkout</a>
+</div>
+{% endblock %}

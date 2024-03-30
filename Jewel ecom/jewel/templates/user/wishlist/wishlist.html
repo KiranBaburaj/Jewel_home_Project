@@ -1,0 +1,79 @@
+{% extends 'user/base.html' %}
+
+{% block content %}
+  <div class="container mt-4">
+    <h2>Wishlist</h2>
+    {% if wishlist.products.all %}
+      <table class="table table-hover">
+        <thead>
+          <tr>
+            <th scope="col">Product</th>
+            <th scope="col">Image</th>
+            <th scope="col">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for product in wishlist.products.all %}
+            <tr>
+              <td><a href="{% url 'product_detail' product_id=product.id %}">{{ product.name }}</a></td>
+              <td><img src="{{ product.images.first.images.url }}" alt="{{ product.name }}" width="50" height="50"></td>
+              <td>
+                <a href="{% url 'remove_from_wishlist' product.id %}" class="btn btn-danger">Remove</a>
+                <form class="d-inline add-to-cart-form" action="{% url 'add_to_cart' %}" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="product_id" value="{{ product.id }}">
+                    <label for="size">Size:</label>
+                    <select name="size">
+                        {% for size in product.product_sizes.all %}
+                            <option value="{{ size.id }}">{{ size.measurement }}</option>
+                        {% endfor %}
+                    </select>
+                    <button type="submit" class="btn btn-primary">Add to Cart</button>
+                </form>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p class="mt-3">Your wishlist is empty.</p>
+    {% endif %}
+  </div>
+
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script>
+  $(document).ready(function () {
+    $('.add-to-cart-form').submit(function (event) {
+        event.preventDefault();
+        var form = $(this);
+        var formData = form.serialize(); // Serialize form data
+        
+        $.ajax({
+            type: 'POST',
+            url: form.attr('action'), // Get action URL from form attribute
+            data: formData,
+            dataType: 'json',
+            beforeSend: function(xhr, settings) {
+                xhr.setRequestHeader("X-CSRFToken", "{{ csrf_token }}"); // Include CSRF token in request headers
+            },
+            success: function (data) {
+                if (data.success) {
+                    // Display success message or perform other actions
+                    alert("Product added to cart successfully!");
+                } else {
+                    // Handle errors or display error message
+                    alert("Error: " + data.message);
+                }
+            },
+            error: function (xhr, status, error) {
+                // Handle AJAX errors
+                console.error("AJAX Error:", error);
+                alert("An unexpected error occurred. Please try again.");
+            }
+        });
+    });
+});
+
+</script>
+
+{% endblock %}

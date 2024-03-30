@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+{% extends 'admin/base.html' %}
+{% block title %}Delete Product{% endblock %}
+
+{% block content %}
+
+<h1>Confirm Product Deletion</h1>
+<p>Are you sure you want to delete the product <strong>{{ product.name }}</strong>?</p>
+
+<form method="post">
+  {% csrf_token %}
+  <button type="submit">Delete Product</button>
+</form>
+
+{% endblock %}
