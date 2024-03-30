@@ -10,6 +10,17 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
+
+import os
+from dotenv import load_dotenv
+
+
+# Load environment variables from .env file
+load_dotenv()
+
+
+import os
+
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -20,13 +31,19 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-!1)rul!i0*5h$^q(^)5ab$8ctsfxp-v938pom&bb&cdqzn315*'
+SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-!1)rul!i0*5h$^q(^)5ab$8ctsfxp-v938pom&bb&cdqzn315*')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = bool(os.environ.get('DEBUG', False))
+import os
+import os
 
+
+# Set the ALLOWED_HOSTS setting in Django
 ALLOWED_HOSTS = []
-SOCIALACCOUNT_ADAPTER = 'allauth.socialaccount.adapter.DefaultSocialAccountAdapter'
+
+
+SOCIALACCOUNT_PROVIDERS = os.environ.get('SOCIALACCOUNT_PROVIDERS', {})
 
 
 
@@ -43,12 +60,12 @@ SOCIALACCOUNT_PROVIDERS = {
 }
 
 # settings.py
-ACCOUNT_SIGNUP_REDIRECT_URL = '/accounts/profile/'
+ACCOUNT_SIGNUP_REDIRECT_URL = os.environ.get('ACCOUNT_SIGNUP_REDIRECT_URL', '/accounts/profile/')
 
 # settings.py
 
-RAZORPAY_API_KEY = 'rzp_test_HHlRhM2dDivhld'
-RAZORPAY_API_SECRET = '7ns64MRvik8KWRPU6SKUXT4A'
+RAZORPAY_API_KEY = os.environ.get('RAZORPAY_API_KEY', '')
+RAZORPAY_API_SECRET = os.environ.get('RAZORPAY_API_SECRET', '')
 
 
 INSTALLED_APPS = [
@@ -65,8 +82,8 @@ INSTALLED_APPS = [
 # Add the Twilio credentials
 
 
-TWILIO_ACCOUNT_SID = 'ACe8cae81e087c6c60d31751fd56d7fd99'
-TWILIO_AUTH_TOKEN = 'eb8a7fd3b2c48e57610370218ab62b84'
+TWILIO_ACCOUNT_SID = os.environ.get('TWILIO_ACCOUNT_SID', '')
+TWILIO_AUTH_TOKEN = os.environ.get('TWILIO_AUTH_TOKEN', '')
 
 AUTHENTICATION_BACKENDS = [
     # ...
@@ -123,14 +140,17 @@ WSGI_APPLICATION = 'jewel.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
+
+
+# Database configuration
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'jewels',
-        'USER': 'postgres',
-        'PASSWORD': '916916',
-        'HOST': 'localhost',  # Set to your PostgreSQL server host
-        'PORT': '5432',       # Set to your PostgreSQL server port
+        'ENGINE': os.getenv('DB_ENGINE'),
+        'NAME': os.getenv('DB_NAME'),
+        'USER': os.getenv('DB_USER'),
+        'PASSWORD': os.getenv('DB_PASSWORD'),
+        'HOST': os.getenv('DB_HOST'),
+        'PORT': os.getenv('DB_PORT'),
     }
 }
 
