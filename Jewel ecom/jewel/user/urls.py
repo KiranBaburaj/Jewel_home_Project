@@ -6,7 +6,7 @@ from payments.views import *
 
 urlpatterns = [
     path('signup/', signup, name='signup'),
-    path('home/', home, name='home'),
+    path('', home, name='home'),
     path('verify-otp/', verify_otp, name='verify_otp'),
     path('signin/', signin, name='signin'),
  path('accounts/profile/', home, name='home'),  # Adjust 'profile_view' with your actual view
