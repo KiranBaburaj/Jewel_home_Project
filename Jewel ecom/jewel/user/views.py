@@ -71,7 +71,7 @@ def generate_otp():
 
 def send_otp_twilio(user):
     account_sid = 'ACe8cae81e087c6c60d31751fd56d7fd99'
-    auth_token = '29a1270bcda2515c4f694a14548697d5'
+    auth_token = '810ec3b03b749fbeb6faf4095362e2b8'
     client = Client(account_sid, auth_token)
 
     try:
